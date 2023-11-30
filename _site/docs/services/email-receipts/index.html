@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fintr - Email Receipts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0f172a",
+              secondary: "#0db9e9",
+              tertiary: "#1e293b",
+            },
+          },
+        },
+      };
+
+      let isSidebarOpen = false;
+
+      function openSidebar() {
+        isSidebarOpen = !isSidebarOpen;
+
+        const sidebarWrapper = document.querySelector("#sidebar_wrapper");
+        const sidebar = document.querySelector("#sidebar");
+        if (!sidebar) return;
+
+        if (isSidebarOpen) {
+          sidebar.classList.add("open", "navbar_drawer");
+          sidebar.classList.remove("overflow-y-auto");
+          sidebar.style.maxWidth = "";
+        } else sidebar.classList.remove("open", "navbar_drawer");
+      }
+    </script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <style>
+      .open {
+        display: block !important;
+      }
+
+      .navbar_drawer {
+        position: absolute !important;
+        /* top: 99%; */
+        /* padding: 0 15px; */
+        height: 100%;
+        max-width: 100% !important;
+        width: 100%;
+        justify-content: center;
+        z-index: 20;
+        background: #0f172a;
+      }
+
+      .close {
+        display: none !important;
+      }
+
+      /*  */
+
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        column-gap: 30px;
+        row-gap: 30px;
+        width: 100%;
+        margin-bottom: 30px;
+        margin-top: 30px;
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
+        column-gap: 30px;
+        row-gap: 30px;
+        width: 100%;
+        margin-bottom: 30px;
+        margin-top: 30px;
+      }
+
+      a:not(#mainmenu a):hover {
+        color: #0db9e9;
+      }
+
+      #sidebar::-webkit-scrollbar-track {
+        background: #959595;
+        border-radius: 10px;
+      }
+
+      #sidebar::-webkit-scrollbar-thumb {
+        background: #424242;
+        border-radius: 10px;
+      }
+
+      #sidebar::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #nohover a:hover {
+        color: #fff !important;
+      }
+
+      hr {
+        margin: 0.5rem 0rem !important;
+        border-color: rgb(57, 56, 56) !important;
+      }
+
+      @media only screen and (max-width: 460px) {
+        .grid-3,
+        .grid-2 {
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-primary">
+    <div class="bg-primary h-scren h-full">
+<div class="mx-auto h-full px-8 xl:px-0" style="max-width: 1320px">
+  <!-- Header Nav -->
+  <header
+    class="fixed flex justify-center w-full top-0 left-0 mb-[80px] z-50 px-4"
+  >
+    <nav
+      class="flex w-full items-center justify-between bg-primary text-white p-3 border-solid border-tertiary border-b"
+      style="max-width: 1320px"
+    >
+      <!-- Logo -->
+      <div class="w-32">Logo</div>
+      <!-- Search -->
+      <div
+        class="flex-1 bg-primary flex justify-center mx-5 bg-tertiary rounded-md"
+      >
+        <input
+          type="text"
+          class="px-5 hidden lg:flex py-2 w-full bg-tertiary border-solid rounded-md border-tertiary border outline-secondary outline-1 ring-0"
+          placeholder="Search deposits docs"
+        />
+      </div>
+      <div class="justify-between gap-10 items-center hidden lg:flex">
+        <div>v0.0.0</div>
+        <div>Icon</div>
+        <div><a href="https://github.com">Github</a></div>
+        <div>
+          <button class="bg-secondary px-4 py-2 rounded-md text-[#212934]">
+            Submit a request
+          </button>
+        </div>
+        <div>
+          <button
+            class="border-secondary border border-outline px-4 py-2 rounded-md text-secondary"
+          >
+            Sign in
+          </button>
+        </div>
+      </div>
+
+      <div class="lg:hidden block" onclick="openSidebar()">
+        <svg
+          focusable="false"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 5H20.359M3 18.186H20.359M3 11.592H20.359"
+            stroke="currentcolor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></path>
+        </svg>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Sidebar -->
+  <div class="flex pt-20 relative">
+    <aside
+      id="sidebar"
+      class="w-full hidden w-full lg:block top-[65px] sticky overflow-y-auto border-r-2 border-solid border-tertiary"
+      style="max-width: 250px; height: calc(100vh - 80px); min-width: 280px"
+    >
+      <nav class="px-3">
+        <ul id="mainmenu" class="text-white rounded-lg text-lg">
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 px-2 py-3 hover:bg-tertiary rounded-lg"
+            >
+              <div>
+                <img
+                  src="https://docs.deposits.dev/assets/svgs/sidebar/docs_home.svg"
+                  alt=""
+                  srcset=""
+                />
+              </div>
+              <p>Docs Home</p>
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 px-2 py-3 hover:bg-tertiary rounded-lg"
+            >
+              <div>
+                <img
+                  src="https://docs.deposits.dev/assets/svgs/sidebar/api_reference.svg"
+                  alt=""
+                  srcset=""
+                />
+              </div>
+              <p>API References</p>
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 px-2 py-3 hover:bg-tertiary rounded-lg"
+            >
+              <div>
+                <img
+                  src="https://docs.deposits.dev/assets/svgs/sidebar/ui_kit.svg"
+                  alt=""
+                  srcset=""
+                />
+              </div>
+              <p>UI Kit</p>
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 px-2 py-3 hover:bg-tertiary rounded-lg"
+            >
+              <div>
+                <img
+                  src="https://docs.deposits.dev/assets/svgs/sidebar/recipes.svg"
+                  alt=""
+                  srcset=""
+                />
+              </div>
+              <p>Guides</p>
+            </a>
+          </li>
+
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 px-2 py-3 hover:bg-tertiary rounded-lg"
+            >
+              <div>
+                <img
+                  src="https://docs.deposits.dev/assets/svgs/sidebar/references.svg"
+                  alt=""
+                  srcset=""
+                />
+              </div>
+              <p>Glossary</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="my-8 py-2 text-white">
+        <h2 class="uppercase font-bold text-base">Getting Started</h2>
+        <div class="flex flex-col text-base"><a href="/docs/getting-started/introduction/" class="py-1">Introduction</a><a href="/docs/getting-started/key-terms/" class="py-1">Key Terms</a><a href="#" class="py-1">Environments</a>
+          <a href="#" class="py-1">Authentication</a>
+          <a href="#" class="py-1">Testing</a>
+          <a href="#" class="py-1">Errors</a>
+        </div>
+      </div>
+
+      <div class="my-8 text-white">
+        <h2 class="uppercase py-2 font-bold text-base">Services</h2>
+        <div class="flex flex-col text-base"><a href="/docs/services/email-receipts/" class="py-1">Email Receipts</a><a href="#" class="py-1">Webhooks</a>
+        </div>
+      </div>
+
+      <div class="my-8 text-white">
+        <h2 class="uppercase py-2 font-bold text-base">Libraries & SDKs</h2>
+        <div class="flex flex-col text-base">
+          <a href="#" class="py-1">E-Commerce</a>
+          <a href="#" class="py-1">One-Click Pay</a>
+          <a href="#" class="py-1">Payouts</a>
+          <a href="#" class="py-1">Balance</a>
+        </div>
+      </div>
+
+      <div class="text-white">
+        <h2 class="uppercase py-2 font-bold text-base">Use Cases</h2>
+        <div class="flex flex-col text-base">
+          <a href="#" class="py-1">Overview</a>
+          <a href="#" class="py-1">Digital Banking</a>
+          <a href="#" class="py-1">Invoice Management System</a>
+          <a href="#" class="py-1">Donations Engine</a>
+          <a href="#" class="py-1">International Remittance</a>
+          <a href="#" class="py-1">Challenger Bank</a>
+        </div>
+      </div>
+    </aside>
+
+    
+<style>
+  .custom-highlighter-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    background: #1a2b43;
+  }
+
+  .custom-highlighter-header {
+    padding: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    width: 100%;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    background: #13243d;
+  }
+
+  .custom-highlighter-red {
+    border-radius: 9999px;
+    width: 1rem;
+    height: 1rem;
+    background: #fa4339;
+  }
+
+  .custom-highlighter-green {
+    border-radius: 9999px;
+    width: 1rem;
+    height: 1rem;
+    background: #3de959;
+  }
+
+  .custom-highlighter-yellow {
+    border-radius: 9999px;
+    width: 1rem;
+    height: 1rem;
+    background: #ffc700;
+  }
+
+  /*  */
+
+  .hljs {
+    background: #1a2b43 !important;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  .open {
+    display: block !important;
+  }
+
+  #right-scroll::after {
+    background: #e1e7ec;
+    width: 1px;
+    bottom: 0;
+    left: 2px;
+    content: "";
+    position: absolute;
+    height: 100%;
+  }
+
+  article p {
+    padding: 0.4rem 0px;
+    color: white;
+  }
+
+  article a {
+    color: #0db9e9;
+  }
+
+  article h2,
+  article h3 {
+    color: white;
+    font-weight: 500;
+    padding: 1.5rem 0px 0.5rem 0px;
+  }
+
+  #right a {
+    font-size: 12px;
+    color: #e9e9e9;
+  }
+
+  article h2 {
+    font-size: 28px;
+    line-height: 34px;
+  }
+
+  article h3 {
+    font-size: 20px;
+    line-height: 25px;
+  }
+
+  article ul {
+    color: white;
+    padding: 1rem 2rem !important;
+    list-style: disc !important;
+  }
+
+  article ul li {
+    padding: 0.2rem !important;
+  }
+
+  .navbar_drawer {
+    position: absolute !important;
+    /* top: 99%; */
+    /* padding: 0 15px; */
+    height: 100%;
+    max-width: 100% !important;
+    width: 100%;
+    justify-content: center;
+    z-index: 20;
+    background: #0f172a;
+  }
+
+  .close {
+    display: none !important;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    column-gap: 30px;
+    row-gap: 30px;
+    width: 100%;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
+    column-gap: 30px;
+    row-gap: 30px;
+    width: 100%;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+
+  a:not(#mainmenu a):hover {
+    color: #0db9e9;
+  }
+
+  #sidebar::-webkit-scrollbar-track {
+    background: #959595;
+    border-radius: 10px;
+  }
+
+  #sidebar::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 10px;
+  }
+
+  #sidebar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #nohover a:hover {
+    color: #fff !important;
+  }
+
+  @media only screen and (max-width: 460px) {
+    .grid-3,
+    .grid-2 {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+</style>
+
+<main
+  class="flex-1 h-full lg:px-8 px-0 pb-8"
+  style="max-width: cal(100% - 280px)"
+>
+
+  
+<div>
+  <div class="flex gap-2 text-gray-500">
+    
+
+    <div class="flex gap-2 text-gray-500">
+      <a href="/">Docs Home</a>
+       /
+      <a  href="/docs/services/">Services</a>
+       /
+      <a  class="text-white"  href="/docs/services/email-receipts/">Email Receipts</a>
+      
+    </div>
+  </div>
+
+  <div class="text-white pt-6">
+    <h1 id="email-receipts" class="text-4xl font-bold py-3">Email Receipts</h1>
+  </div>
+  <div>
+    <article class="leading-6"><p>Send receipts to your users when transactions occur</p>
+<hr>
+<p>Deposits can automatically send receipts to your users when transactions occur. These email receipts contain information on the transactions and action items that can be taken right in the email.</p>
+<p>Email receipts are sent to the receipient when assets are created, and when important steps occur in the transaction flow. Some examples of these actions include;</p>
+<ul>
+<li>When a payment is received</li>
+<li>When a payment is on the way to the vendor</li>
+<li>When and invoice is issued</li>
+<li>After a password is reset</li>
+</ul>
+</article>
+
+    <div class="flex py-10 justify-between text-white">
+
+      0
+
+      <button class="px-6 py-3.5 bg-tertiary rounded-lg">Widthdrawal</button>
+      <button class="px-6 py-3.5 bg-tertiary rounded-lg">Wires</button>
+
+    </div>
+  </div>
+
+  <div class="border-t py-10 my-10 flex justify-end">
+    <p class="text-gray-500 leading-5">
+      This page was last updated 4 months ago
+    </p>
+  </div>
+</div>
+
+
+</main>
+
+
+<div class="pl-2 lg:w-1/5 w-full">
+  <aside
+    id="right"
+    class="w-full lg:block top-[65px] sticky overflow-y-auto"
+    style="max-width: 250px; height: calc(100vh - 80px); min-width: 280px"
+  >
+    <div id="right-scroll" class="relative text-white pt-3 relative pl-8">
+      <div class="absolute h-4 w-1.5 bg-secondary left-0 top-2 z-40"></div>
+      <h2 class="uppercase font-bold leading-5 text-sm text-[#e99e9]">
+        On this page
+      </h2>
+      <div
+        id="tableOfContents"
+        class="flex flex-col text-base pl-3 pt-3 leading-5"
+      >
+        <div class="toc" >
+        <ol><li><a href="#email-receipts">Email Receipts</a></li></ol>
+      </div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+
+<script>
+  document.querySelectorAll("article pre").forEach((element) => {
+    const wrapper = document.createElement("div");
+
+    const header = document.createElement("div");
+    const red = document.createElement("div");
+    const yellow = document.createElement("div");
+    const green = document.createElement("div");
+
+    // Adding CSS classes
+    wrapper.classList.add("custom-highlighter-wrapper");
+    header.classList.add("custom-highlighter-header");
+    green.classList.add("custom-highlighter-green");
+    red.classList.add("custom-highlighter-red");
+    yellow.classList.add("custom-highlighter-yellow");
+
+    element.insertAdjacentElement("beforebegin", wrapper);
+
+    // Appending
+    header.appendChild(red);
+    header.appendChild(yellow);
+    header.appendChild(green);
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(element);
+  });
+</script>
+
+  </div>
+</div>
+</div>
+  </body>
+</html>
